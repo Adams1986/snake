@@ -166,7 +166,7 @@ public class Logic {
      *
      * @return returns inriched game object
      */
-    public static Game createGame(Game game) {
+    public static boolean createGame(Game game) {
 
         if (game.getHost() != null) {
             if (db.createGame(game)) {
@@ -175,10 +175,10 @@ public class Logic {
                 } else {
                     game.setStatus("open");
                 }
-                return game;
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     public static boolean joinGame(Game game) {

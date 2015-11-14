@@ -131,6 +131,7 @@ public class Api {
         try {
             user = new Gson().fromJson(data, User.class);
 
+            //TODO: default in db is 1 but for flexibility probably better to leave this so method can be used to create a admin
             user.setType(1);
 
             boolean createdUser = Logic.createUser(user);
@@ -184,18 +185,18 @@ public class Api {
     public Response createGame(String json) {
 
         try {
-            Game game = Logic.createGame(new Gson().fromJson(json, Game.class));
+            boolean createdGame = Logic.createGame(new Gson().fromJson(json, Game.class));
 
-            if (game != null) {
+            if (createdGame) {
                 return Response
                         .status(201)
-                        .entity(new Gson().toJson(game))
+                        .entity("{\"message\":\"Your game was created\"}")
                         .header("Access-Control-Allow-Headers", "*")
                         .build();
             } else {
                 return Response
                         .status(400)
-                        .entity("{\"message\":\"something went wrong\"}")
+                        .entity("{\"message\":\"Something went wrong\"}")
                         .header("Access-Control-Allow-Headers", "*")
                         .build();
             }
@@ -258,7 +259,7 @@ public class Api {
             } else {
                 return Response
                         .status(400)
-                        .entity("something went wrong")
+                        .entity("{\"message\":\"Something went wrong\"}")
                         .build();
             }
         } catch (JsonSyntaxException | NullPointerException e) {
@@ -274,7 +275,7 @@ public class Api {
 
     @DELETE //DELETE-request fjernelse af data(spillet slettes)
     @Path("/games/{gameid}")
-    @Produces("appication/json")
+    @Produces("application/json")
     public Response deleteGame(@PathParam("gameid") int gameId) {
 
         int deleteGame = Logic.deleteGame(gameId);
@@ -306,7 +307,7 @@ public class Api {
     @GET //"GET-request"
     @Path("/scores/")
     @Produces("application/json")
-    public String getHighscore(String data) {
+    public String getHighscore() {
 
         return new Gson().toJson(Logic.getHighscore());
 
