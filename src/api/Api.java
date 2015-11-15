@@ -18,13 +18,6 @@ import javax.ws.rs.core.Response;
 @Path("/api")
 public class Api {
 
-    @GET //"GET-Request" gør at vi kan forspørge en specifik data
-    @Produces("application/json")
-    public String getClichedMessage() {
-        // Return some cliched textual content
-        return "Hello World!";
-    }
-
     @POST //"POST-request" er ny data vi kan indtaste for at logge ind.
     @Path("/login/")
     @Produces("application/json")
@@ -96,7 +89,7 @@ public class Api {
                 .build();
     }
 
-    /*
+
     @DELETE //DELETE-request fjernelse af data (bruger): Slet bruger
     @Path("/users/{userid}")
     @Produces("application/json")
@@ -119,7 +112,6 @@ public class Api {
         }
 
     }
-*/
 
     @POST //POST-request: Ny data der skal til serveren; En ny bruger oprettes
     @Path("/users/")
@@ -134,17 +126,40 @@ public class Api {
             //TODO: default in db is 1 but for flexibility probably better to leave this so method can be used to create a admin
             user.setType(1);
 
-            boolean createdUser = Logic.createUser(user);
+            int createdUser = Logic.createUser(user);
 
-            if (createdUser) {
+            switch (createdUser) {
 
-                return Response
-                        .status(200)
-                        .entity("{\"message\":\"User was created\"}")
-                        .header("Access-Control-Allow-Headers", "*")
+                case 0:
+                    return Response
+                            .status(200)
+                            .entity("{\"message\":\"User was created\"}")
+                            .header("Access-Control-Allow-Headers", "*")
+                            .build();
+
+                case 1:
+                    return Response
+                        .status(400)
+                        .entity("{\"message\":\"Username or email already exists\"}")
                         .build();
-            } else {
-                return Response.status(400).entity("{\"message\":\"Username or email already exists\"}").build();
+
+                case 2:
+                    return Response
+                            .status(400)
+                            .entity("{\"message\":\"Password is not valid. Must be 7 to 14 characters long, consisting only of " +
+                                    "numbers and letters.\"}")
+                            .build();
+
+                case 3:
+                    return Response
+                            .status(400)
+                            .entity("{\"message\":\"Invalid email. Must contain @ and .com/.dk/.net or equivalent")
+                            .build();
+                default:
+                    return Response
+                            .status(400)
+                            .entity("{\"message\":\"Something went wrong\"}")
+                            .build();
             }
         } catch (JsonSyntaxException | NullPointerException e) {
             e.printStackTrace();

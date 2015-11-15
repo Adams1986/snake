@@ -3,6 +3,8 @@ package controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import database.DatabaseWrapper;
 import model.Game;
@@ -38,14 +40,31 @@ public class Logic {
      * @param user
      * @return true if success, false if failure
      */
-    public static boolean createUser(User user) {
-        user.setPassword(Security.hashing(user.getPassword()));
+    public static int createUser(User user) {
 
-        if (db.createUser(user))
-            return true;
-        else {
-            return false;
+        //Email checker
+        Pattern pattern = Pattern.compile("^[_a-zA-Z0-9]{2,}+@[_a-zA-Z0-9]{2,}\\.[_a-zA-Z0-9]{2,4}");
+        Matcher matcher = pattern.matcher(user.getEmail());
+
+        if (matcher.matches()) {
+
+            //password checker
+            pattern = Pattern.compile("^[a-zA-Z0-9æøåÆØÅ]{7,14}");
+            matcher = pattern.matcher(user.getPassword());
+
+            if (matcher.matches()) {
+                user.setPassword(Security.hashing(user.getPassword()));
+
+                if (db.createUser(user))
+                    return 0;
+                else
+                    return 1;
+            }
+            else
+                return 2;
         }
+        else
+            return 3;
     }
 
     /**
