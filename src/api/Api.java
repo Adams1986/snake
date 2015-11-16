@@ -358,7 +358,7 @@ public class Api {
             case "pending":
                 games = Logic.getGames(DatabaseWrapper.PENDING_BY_ID, userId);
                 break;
-            case "open":
+            case "openbyid":
                 games = Logic.getGames(DatabaseWrapper.OPEN_BY_ID, userId);
                 break;
             case "finished":
